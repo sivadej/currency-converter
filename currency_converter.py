@@ -39,9 +39,9 @@ def validate_inputs(conv_from, conv_to, amount):
         return redirect(url_for('show_index'))
 
     # All inputs are now deemed valid. store values in session.
-    # session['convert_from'] = convert_from
-    # session['convert_to'] = convert_to
-    # session['amount'] = amount
+    session['convert_from'] = convert_from
+    session['convert_to'] = convert_to
+    session['amount'] = amount
     # All inputs are valid and ready, return True.
     # Invalid inputs should have been handled by the previous try blocks
     return True
