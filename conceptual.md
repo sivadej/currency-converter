@@ -51,5 +51,5 @@ _Returns a JSON object that can be useful in utilizing http requests from other 
 - What was the hardest part of this past week for you?<p>
 _Understanding the GET/POST/etc flow when using Jinja templates and redirects in Flask._
 
-  What was the most interesting?<p>
+- What was the most interesting?<p>
 _Learning about web scraping with Python_
