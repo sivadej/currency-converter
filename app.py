@@ -4,10 +4,12 @@ from currency_converter import *
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
 
+
 @app.route('/')
 def show_index():
     """ Homepage / main form view """
     return render_template('index.html')
+
 
 @app.route('/convert', methods=['POST'])
 def do_conversion():
@@ -21,5 +23,7 @@ def do_conversion():
     conv_to = request.form['convert-to']
     amount = request.form['amount']
     if validate_inputs(conv_from, conv_to, amount) is True:
+        # All inputs are now deemed valid. store values in session.
+        create_session(conv_from, conv_to, amount)
         flash(get_result_message())
     return redirect(url_for('show_index'))

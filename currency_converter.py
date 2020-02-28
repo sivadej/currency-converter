@@ -24,8 +24,8 @@ def validate_inputs(conv_from, conv_to, amount):
     convert_from = conv_from.upper()
     convert_to = conv_to.upper()
 
-    # check for valid country codes via API.
-    # country codes are called individually in order to determine
+    # Check for valid country codes via API.
+    # Country codes are called individually in order to determine
     #   which input is throwing the error
     try:
         c.get_rates(convert_from)
@@ -38,13 +38,15 @@ def validate_inputs(conv_from, conv_to, amount):
         flash(convert_to + ' is not a valid code')
         return redirect(url_for('show_index'))
 
-    # All inputs are now deemed valid. store values in session.
-    session['convert_from'] = convert_from
-    session['convert_to'] = convert_to
-    session['amount'] = amount
     # All inputs are valid and ready, return True.
     # Invalid inputs should have been handled by the previous try blocks
     return True
+
+
+def create_session(conv_from, conv_to, amount):
+    session['convert_from'] = conv_from.upper()
+    session['convert_to'] = conv_to.upper()
+    session['amount'] = Decimal(amount)
 
 
 def get_result_message():
