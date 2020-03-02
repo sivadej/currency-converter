@@ -32,7 +32,7 @@ def do_conversion():
         'conv_to' : request.form['convert-to'],
         'amount' : request.form['amount'],
     })
-    flash(validate_session_data())
+    flash(get_result_msg())
     return redirect(url_for('show_index'))
 
 @app.route('/reset')
