@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, session, request, url_for, flash
-from currency_converter import *
+from currency_converter import update_session_from_form, get_result_msg, clear_session
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
