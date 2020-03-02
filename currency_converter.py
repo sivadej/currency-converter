@@ -5,51 +5,40 @@ from forex_python.converter import CurrencyRates, CurrencyCodes
 # instantiate rate converter
 c = CurrencyRates()
 
-
-def validate_inputs(conv_from, conv_to, amount):
-    """Ensure valid country codes and decimal amount entered. Handle errors.
-    Once validated, inputs will be stored to a Flask session.
-    Returns True to indicate all valid inputs. On input errors,
-    message is flashed and returned to homepage without conversions."""
+######### how to display multiple errors? 
+######### change all the redirects to just flash message, let app.py handle one message view
+def validate_session_data():
+    if session['convert_to'] == '' or session['convert_from'] == '' or session['amount'] == '':
+        return 'Please fill in all fields.'
 
     # Ensure amount input properly converts to Decimal type.
-    # Empty input will throw an error.
     try:
-        amount = Decimal(amount)
+        amount = Decimal(session['amount'])
     except:
-        flash('Invalid Amount.')
-        return redirect(url_for('show_index'))
+        return 'Invalid amount.'
+    session['amount'] = Decimal(session['amount'])
 
     # Convert to uppercase currency codes as required by API
-    convert_from = conv_from.upper()
-    convert_to = conv_to.upper()
+    session['convert_from'] = session['convert_from'].upper()
+    session['convert_to'] = session['convert_to'].upper()
 
     # Check for valid country codes via API.
     # Country codes are called individually in order to determine
     #   which input is throwing the error
     try:
-        c.get_rates(convert_from)
+        c.get_rates(session['convert_from'])
     except:
-        flash(convert_from + ' is not a valid code')
-        return redirect(url_for('show_index'))
+        return session['convert_from'] + ' is not a valid code.'
     try:
-        c.get_rates(convert_to)
+        c.get_rates(session['convert_to'])
     except:
-        flash(convert_to + ' is not a valid code')
-        return redirect(url_for('show_index'))
+        return session['convert_to'] + ' is not a valid code.'
 
-    # All inputs are valid and ready, return True.
+    # All inputs are valid and ready at this point.
     # Invalid inputs should have been handled by the previous try blocks
-    return True
+    return get_conversion_msg()
 
-
-def create_session(conv_from, conv_to, amount):
-    session['convert_from'] = conv_from.upper()
-    session['convert_to'] = conv_to.upper()
-    session['amount'] = Decimal(amount)
-
-
-def get_result_message():
+def get_conversion_msg():
     """Returns string with message showing final conversions.
     Amounts are rounded to two decimal places.
     This function should only be called while valid inputs
@@ -60,16 +49,23 @@ def get_result_message():
     s = CurrencyCodes()
     symbol_from = s.get_symbol(session['convert_from'])
     symbol_to = s.get_symbol(session['convert_to'])
-    amount = session['amount']
-    converted_amount = get_converted_amount(
-        session['convert_from'], session['convert_to'], session['amount'])
-    result_msg = f"{symbol_from} {round(session['amount'],2)} = {symbol_to} {converted_amount}"
+    conversion_result = get_converted_amount()
+    result_msg = f"{symbol_from} {round(session['amount'],2)} = {symbol_to} {conversion_result}"
     return result_msg
 
-
-def get_converted_amount(conv_from, conv_to, amt):
-    converted_amount = c.convert(conv_from, conv_to, amt)
+def get_converted_amount():
+    converted_amount = c.convert(session['convert_from'], session['convert_to'], session['amount'])
     return round(converted_amount, 2)
+
+def create_session(form_data):
+    session['convert_from'] = form_data['conv_from']
+    session['convert_to'] = form_data['conv_to']
+    session['amount'] = form_data['amount']
+
+def clear_session():
+    session['convert_from'] = ''
+    session['convert_to'] = ''
+    session['amount'] = ''
 
 
 ###################### Reusability notes ####################################
