@@ -5,6 +5,9 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
 app.config['TESTING'] = True
 
+#from flask_debugtoolbar import DebugToolbarExtension
+#toolbar = DebugToolbarExtension(app)
+
 @app.route('/')
 def show_index():
     """ Main form view """
@@ -18,6 +21,11 @@ def do_conversion():
         'conv_to' : request.form['convert-to'],
         'amount' : request.form['amount'],
     })
+    flash(get_result_msg())
+    return redirect(url_for('show_index'))
+
+@app.route('/convert2', methods=['POST'])
+def do_conversion2():
     flash(get_result_msg())
     return redirect(url_for('show_index'))
 

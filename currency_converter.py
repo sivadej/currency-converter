@@ -1,13 +1,20 @@
 from flask import Flask, redirect, session, request, url_for, flash
 from decimal import *
 from forex_python.converter import CurrencyRates, CurrencyCodes
-from session_validator import validate_session
+from session_validator import validate_data, make_uppercase_and_decimal
 
 # instantiate rate converter
 c = CurrencyRates()
+s = CurrencyCodes()
 
 def get_result_msg():
-    if validate_session() is True:
+    session_data = {
+        'convert_from' : session['convert_from'],
+        'convert_to' : session['convert_to'],
+        'amount' : session['amount'],
+    }
+    update_session_data(make_uppercase_and_decimal(session_data))
+    if validate_data(session_data) is True:
         return get_conversion_msg()
     else:
         return ''
@@ -17,7 +24,7 @@ def get_conversion_msg():
     This function should only be called with validated inputs stored in session. """
 
     # Determine and assign currency symbols.
-    s = CurrencyCodes()
+    
     symbol_from = s.get_symbol(session['convert_from'])
     symbol_to = s.get_symbol(session['convert_to'])
 
@@ -28,7 +35,12 @@ def get_conversion_msg():
 
 def get_converted_amount():
     amt = c.convert(session['convert_from'], session['convert_to'], session['amount'])
-    return round(amt, 2)
+    return round(amt,2)
+
+def update_session_data(data):
+    session['convert_from'] = data['convert_from']
+    session['convert_to'] = data['convert_to']
+    session['amount'] = data['amount']
 
 def update_session_from_form(form_data):
     session['convert_from'] = form_data['conv_from']
