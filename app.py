@@ -3,6 +3,7 @@ from currency_converter import update_session_from_form, get_result_msg, clear_s
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
+app.config['TESTING'] = True
 
 @app.route('/')
 def show_index():
